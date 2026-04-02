@@ -5,11 +5,14 @@ const generateSlug = (val: string) =>
 
 export const Categories: CollectionConfig = {
   slug: 'categories',
+
   admin: {
-    group: 'Catalog',
     useAsTitle: 'name',
-    defaultColumns: ['name', 'parent', 'depth', 'isActive', 'isFeatured'],
+    group: 'Catalog',
+    defaultColumns: ['name', 'parent', 'isActive', 'sortOrder'],
+    listSearchableFields: ['name', 'slug'],
   },
+
   fields: [
     {
       name: 'name',
@@ -20,14 +23,9 @@ export const Categories: CollectionConfig = {
       name: 'slug',
       type: 'text',
       unique: true,
-      admin: { readOnly: true },
-      hooks: {
-        beforeValidate: [
-          ({ data, value }) => {
-            if (data?.name) return generateSlug(data.name)
-            return value
-          },
-        ],
+      admin: {
+        readOnly: true,
+        description: 'Auto-generated from name. Do not edit manually.',
       },
     },
     {
@@ -35,7 +33,9 @@ export const Categories: CollectionConfig = {
       type: 'relationship',
       relationTo: 'categories',
       hasMany: false,
-      admin: { description: 'Leave empty for top-level category' },
+      admin: {
+        description: 'Leave empty for root category. Select parent to make this a sub-category.',
+      },
     },
     {
       name: 'description',
@@ -44,7 +44,25 @@ export const Categories: CollectionConfig = {
     {
       name: 'icon',
       type: 'text',
-      label: 'Icon (emoji or key)',
+      admin: {
+        description: 'Emoji icon. Example: 🪔  🫙  ✨',
+      },
+    },
+    {
+      name: 'image',
+      type: 'upload',
+      relationTo: 'media',
+      admin: {
+        description: 'Category thumbnail. Recommended: 400×300px.',
+      },
+    },
+    {
+      name: 'sortOrder',
+      type: 'number',
+      defaultValue: 0,
+      admin: {
+        description: 'Lower number = appears first. Use 10, 20, 30 for easy reordering.',
+      },
     },
     {
       name: 'depth',
@@ -52,55 +70,54 @@ export const Categories: CollectionConfig = {
       defaultValue: 0,
       admin: {
         readOnly: true,
-        description: '0 = root, 1 = sub, 2 = sub-sub',
+        description: '0 = Root category  1 = Sub-category. Auto-calculated.',
       },
-    },
-    {
-      name: 'sortOrder',
-      type: 'number',
-      defaultValue: 0,
     },
     {
       name: 'isActive',
       type: 'checkbox',
       defaultValue: true,
+      admin: {
+        description: 'Uncheck to hide this category from the website.',
+      },
     },
     {
       name: 'isFeatured',
       type: 'checkbox',
       defaultValue: false,
-    },
-    {
-      name: 'image',
-      type: 'upload',
-      relationTo: 'media',
+      admin: {
+        description: 'Show in Featured Categories section on the Home page.',
+      },
     },
     {
       name: 'meta',
       type: 'group',
+      label: 'SEO Settings',
       fields: [
-        { name: 'title', type: 'text' },
-        { name: 'description', type: 'textarea' },
-        { name: 'keywords', type: 'text' },
+        {
+          name: 'title',
+          type: 'text',
+          admin: { description: 'Google page title. Max 60 characters.' },
+        },
+        {
+          name: 'description',
+          type: 'textarea',
+          admin: { description: 'Google description. Max 160 characters.' },
+        },
+        {
+          name: 'keywords',
+          type: 'text',
+          admin: { description: 'Comma separated. Example: camphor, pooja oil, deepam' },
+        },
       ],
     },
   ],
+
   hooks: {
-    beforeChange: [
-      async ({ data, req }) => {
-        // Auto-set depth based on parent
-        if (data.parent) {
-          try {
-            const parent = await req.payload.findByID({
-              collection: 'categories',
-              id: data.parent,
-            })
-            data.depth = ((parent.depth as number) ?? 0) + 1
-          } catch {
-            data.depth = 1
-          }
-        } else {
-          data.depth = 0
+    beforeValidate: [
+      ({ data }) => {
+        if (data?.name && !data?.slug) {
+          data.slug = generateSlug(data.name)
         }
         return data
       },

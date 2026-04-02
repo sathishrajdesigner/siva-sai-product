@@ -1,0 +1,138 @@
+/* ─── Siva Sai Products — Admin Theme ──────────────────────────────────── */
+
+/* ── Auth page background (login + create first user) ─────────────────── */
+:root {
+  --theme-elevation-0: #fffbf5;
+  --theme-elevation-50: #fef3c7;
+  --theme-elevation-100: #fde68a;
+  --theme-text: #1c1917;
+  --theme-input-bg: #ffffff;
+  --theme-bg: #fffbf5;
+  --theme-border-color: #e7d8c0;
+}
+
+/* Auth page wrapper */
+.template-minimal,
+[class*="minimalTemplate"] {
+  background: linear-gradient(135deg, #fffbf0 0%, #fef9ec 50%, #fff8e8 100%) !important;
+  min-height: 100vh;
+}
+
+/* The centered card on login / create-first-user */
+.template-minimal__wrap,
+[class*="minimalTemplate__wrap"] {
+  background: #ffffff !important;
+  border: 1px solid #f0e4cc !important;
+  border-radius: 16px !important;
+  box-shadow: 0 4px 24px rgba(180, 83, 9, 0.08), 0 1px 4px rgba(0,0,0,0.04) !important;
+  padding: 40px !important;
+  max-width: 440px !important;
+}
+
+/* ── BeforeLogin component styles ─────────────────────────────────────── */
+.ssp-auth-header {
+  margin-bottom: 28px;
+}
+
+.ssp-auth-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.ssp-auth-diya {
+  font-size: 40px;
+  line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(217, 119, 6, 0.3));
+}
+
+.ssp-auth-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1c1917;
+  letter-spacing: -0.4px;
+  line-height: 1.1;
+  margin: 0;
+}
+
+.ssp-auth-tagline {
+  font-size: 12px;
+  color: #b45309;
+  font-weight: 500;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  margin: 4px 0 0;
+}
+
+.ssp-auth-divider {
+  height: 1px;
+  background: linear-gradient(90deg, #fde68a, #f59e0b33, transparent);
+  border: none;
+}
+
+/* ── Override Payload's default "Welcome" heading style ───────────────── */
+.template-minimal__wrap h1,
+[class*="minimalTemplate__wrap"] h1 {
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  color: #1c1917 !important;
+  margin-bottom: 4px !important;
+}
+
+/* The subtitle "To begin, create your first user." */
+.template-minimal__wrap p,
+[class*="minimalTemplate__wrap"] p {
+  font-size: 14px !important;
+  color: #78716c !important;
+}
+
+/* ── Form inputs ──────────────────────────────────────────────────────── */
+.template-minimal input[type="text"],
+.template-minimal input[type="email"],
+.template-minimal input[type="password"],
+[class*="minimalTemplate"] input[type="text"],
+[class*="minimalTemplate"] input[type="email"],
+[class*="minimalTemplate"] input[type="password"] {
+  border-color: #e7d8c0 !important;
+  background: #fffdf8 !important;
+  border-radius: 8px !important;
+}
+
+.template-minimal input:focus,
+[class*="minimalTemplate"] input:focus {
+  border-color: #d97706 !important;
+  box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.12) !important;
+  outline: none !important;
+}
+
+/* ── Submit button ────────────────────────────────────────────────────── */
+.template-minimal button[type="submit"],
+[class*="minimalTemplate"] button[type="submit"] {
+  background: #d97706 !important;
+  border-color: #d97706 !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.2px !important;
+  transition: background 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+.template-minimal button[type="submit"]:hover,
+[class*="minimalTemplate"] button[type="submit"]:hover {
+  background: #b45309 !important;
+  border-color: #b45309 !important;
+  box-shadow: 0 2px 8px rgba(180, 83, 9, 0.3) !important;
+}
+
+/* ── Hide the default Payload logo since BeforeLogin replaces it ───────── */
+.template-minimal__wrap > nav,
+[class*="minimalTemplate__wrap"] > nav {
+  display: none !important;
+}
+
+/* ── Admin nav & sidebar brand color ─────────────────────────────────── */
+:root {
+  --theme-success: #16a34a;
+  --theme-warning: #d97706;
+  --theme-error: #dc2626;
+}
