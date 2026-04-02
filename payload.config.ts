@@ -22,7 +22,6 @@ export default buildConfig({
     theme: 'light',
     meta: {
       titleSuffix: '— Siva Sai Admin',
-      favicon: '/favicon.ico',
       openGraph: {
         title: 'Siva Sai Products Admin',
       },
