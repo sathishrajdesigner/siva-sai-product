@@ -6,7 +6,7 @@ export const Users: CollectionConfig = {
     tokenExpiration: 7200, // 2 hours
     cookies: {
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      sameSite: 'Lax',
     },
   },
 
