@@ -4,20 +4,31 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { FaArrowRight } from 'react-icons/fa6'
 import ProductCard from '@/components/ProductCard'
-import { products, categories } from '@/lib/mockData'
+import { getCategoryIcon } from '@/lib/categoryIcons'
+import type { CmsProduct, CmsCategory } from '@/lib/types'
 
 const VISIBLE_COUNT = 8
 
-export default function FeaturedProducts() {
+type Props = {
+  products: CmsProduct[]
+  categories: CmsCategory[]
+}
+
+export default function FeaturedProducts({ products, categories }: Props) {
   const [activeCategory, setActiveCategory] = useState('all')
+
+  // Only show root categories (no parent) in tabs
+  const tabs = categories.filter((c) => !c.parentId)
 
   const filtered =
     activeCategory === 'all'
       ? products
-      : products.filter((p) => p.category === activeCategory || p.subCategory === activeCategory)
+      : products.filter((p) => p.categorySlug === activeCategory)
 
   const visible = filtered.slice(0, VISIBLE_COUNT)
   const hasMore = filtered.length > VISIBLE_COUNT
+
+  if (products.length === 0) return null
 
   return (
     <section className="py-16 bg-orange-50">
@@ -30,24 +41,27 @@ export default function FeaturedProducts() {
           </p>
         </div>
 
-        {/* Category filter pills */}
         <div className="flex flex-wrap justify-center gap-2 mb-10">
-          {categories.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => setActiveCategory(cat.slug)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                activeCategory === cat.slug
-                  ? 'bg-orange-600 text-white shadow-md shadow-orange-200'
-                  : 'bg-white text-stone-600 border border-stone-200 hover:border-orange-300 hover:text-orange-600'
-              }`}
-            >
-              {cat.name}
-            </button>
-          ))}
+          {tabs.map((cat) => {
+            const Icon = getCategoryIcon(cat.slug)
+            const isActive = activeCategory === cat.slug
+            return (
+              <button
+                key={cat.id}
+                onClick={() => setActiveCategory(cat.slug)}
+                className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                  isActive
+                    ? 'bg-orange-600 text-white shadow-md shadow-orange-200'
+                    : 'bg-white text-stone-600 border border-stone-200 hover:border-orange-300 hover:text-orange-600'
+                }`}
+              >
+                <Icon className="w-3.5 h-3.5" />
+                {cat.name}
+              </button>
+            )
+          })}
         </div>
 
-        {/* Products grid */}
         {visible.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {visible.map((product) => (
@@ -58,7 +72,6 @@ export default function FeaturedProducts() {
           <p className="text-center text-stone-400 py-12">No products in this category yet.</p>
         )}
 
-        {/* View more */}
         {(hasMore || activeCategory !== 'all') && (
           <div className="text-center mt-10">
             <Link

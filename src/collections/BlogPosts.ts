@@ -57,8 +57,8 @@ export const BlogPosts: CollectionConfig = {
       type: 'select',
       defaultValue: 'draft',
       options: [
-        { label: '📝 Draft',     value: 'draft' },
-        { label: '✅ Published', value: 'published' },
+        { label: 'Draft',     value: 'draft' },
+        { label: 'Published', value: 'published' },
       ],
       admin: { position: 'sidebar' },
     },

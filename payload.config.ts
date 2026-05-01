@@ -11,12 +11,14 @@ import { Media } from './src/collections/Media'
 import { Users } from './src/collections/Users'
 import { SiteSettings } from './src/globals/SiteSettings'
 
+const appURL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+
 export default buildConfig({
-  serverURL: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
+  serverURL: appURL,
   cors: [
     'http://localhost:3000',
-    process.env.NEXT_PUBLIC_APP_URL || '',
-  ].filter(Boolean),
+    appURL,
+  ].filter((v, i, a) => v && a.indexOf(v) === i),
   admin: {
     user: Users.slug,
     theme: 'light',

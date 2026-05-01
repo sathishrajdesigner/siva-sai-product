@@ -144,7 +144,6 @@ export const Products: CollectionConfig = {
             {
               name: 'images',
               type: 'array',
-              minRows: 1,
               admin: {
                 description: 'Upload product images. First image is the main image on the website. Max 6.',
               },

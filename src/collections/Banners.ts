@@ -16,6 +16,12 @@ export const Banners: CollectionConfig = {
       required: true,
     },
     {
+      name: 'tag',
+      type: 'text',
+      label: 'Badge Text',
+      admin: { description: 'Small badge above the heading. Example: Manufacturer & Wholesaler' },
+    },
+    {
       name: 'subtitle',
       type: 'text',
     },

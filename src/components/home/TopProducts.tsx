@@ -1,16 +1,12 @@
 import ProductCard from '@/components/ProductCard'
-import { products } from '@/lib/mockData'
+import type { CmsProduct } from '@/lib/types'
 
-export default function TopProducts() {
-  // One featured product per family
-  const seen = new Set<string>()
-  const topProducts = products.filter((p) => {
-    if (p.isTopProduct && !seen.has(p.productFamily)) {
-      seen.add(p.productFamily)
-      return true
-    }
-    return false
-  })
+type Props = {
+  products: CmsProduct[]
+}
+
+export default function TopProducts({ products }: Props) {
+  if (products.length === 0) return null
 
   return (
     <section className="py-16 bg-white">
@@ -23,7 +19,7 @@ export default function TopProducts() {
           </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
-          {topProducts.map((product) => (
+          {products.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
