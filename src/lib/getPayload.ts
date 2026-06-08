@@ -11,5 +11,9 @@ const stubPayload = {
 
 export async function getPayload() {
   if (!process.env.PAYLOAD_SECRET) return stubPayload
-  return _getPayload({ config })
+  try {
+    return await _getPayload({ config })
+  } catch {
+    return stubPayload
+  }
 }
