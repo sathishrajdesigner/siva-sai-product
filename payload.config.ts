@@ -53,6 +53,7 @@ export default buildConfig({
       connectionString: process.env.DATABASE_URI ?? '',
       ssl: { rejectUnauthorized: false },
     },
+    schemaName: 'payload',
   }),
   typescript: {
     outputFile: 'src/payload-types.ts',

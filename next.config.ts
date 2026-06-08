@@ -14,8 +14,8 @@ const securityHeaders = [
       "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
-      "img-src 'self' data: blob: https://res.cloudinary.com https://images.unsplash.com https://plus.unsplash.com",
-      "connect-src 'self' https://res.cloudinary.com",
+      "img-src 'self' data: blob: https://res.cloudinary.com https://images.unsplash.com https://plus.unsplash.com https://*.supabase.co",
+      "connect-src 'self' https://res.cloudinary.com https://*.supabase.co",
       "frame-src https://www.google.com",
       "media-src 'self'",
     ].join('; '),
@@ -37,6 +37,7 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: 'res.cloudinary.com' },
       { protocol: 'https', hostname: 'images.unsplash.com' },
       { protocol: 'http',  hostname: 'localhost' },
+      { protocol: 'https', hostname: '*.supabase.co' },
     ],
   },
 }
