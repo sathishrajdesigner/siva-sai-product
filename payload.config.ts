@@ -11,14 +11,21 @@ import { Media } from './src/collections/Media'
 import { Users } from './src/collections/Users'
 import { SiteSettings } from './src/globals/SiteSettings'
 
-const appURL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+const appURL = process.env.NEXT_PUBLIC_APP_URL
+  || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
+
+const corsOrigins = [
+  'http://localhost:3000',
+  appURL,
+  process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null,
+  // Canonical Vercel domain for this project
+  'https://siva-sai-products.vercel.app',
+].filter((v): v is string => !!v)
+  .filter((v, i, a) => a.indexOf(v) === i)
 
 export default buildConfig({
   serverURL: appURL,
-  cors: [
-    'http://localhost:3000',
-    appURL,
-  ].filter((v, i, a) => v && a.indexOf(v) === i),
+  cors: corsOrigins,
   admin: {
     user: Users.slug,
     theme: 'light',
@@ -52,8 +59,8 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URI ?? '',
       ssl: { rejectUnauthorized: false },
+      max: 3,
     },
-    schemaName: 'payload',
   }),
   typescript: {
     outputFile: 'src/payload-types.ts',
