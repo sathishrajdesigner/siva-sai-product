@@ -1,6 +1,7 @@
 import { buildConfig } from 'payload' 
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { s3Storage } from '@payloadcms/storage-s3'
 import { Categories } from './src/collections/Categories'
 import { Products } from './src/collections/Products'
 import { ProductVariants } from './src/collections/ProductVariants'
@@ -54,6 +55,31 @@ export default buildConfig({
     Users,
   ],
   globals: [SiteSettings],
+  plugins: [
+    s3Storage({
+      enabled: Boolean(process.env.AWS_S3_BUCKET),
+      collections: {
+        media: {
+          prefix: 'website/media',
+          generateFileURL: ({ filename, prefix }) => {
+            const base = process.env.NEXT_PUBLIC_CLOUDFRONT_URL?.replace(/\/$/, '')
+            const key = [prefix, filename].filter(Boolean).join('/')
+            return base ? `${base}/${key}` : key
+          },
+        },
+      },
+      bucket: process.env.AWS_S3_BUCKET ?? '',
+      config: {
+        credentials: process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY
+          ? {
+              accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+              secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+            }
+          : undefined,
+        region: process.env.AWS_REGION,
+      },
+    }),
+  ],
   editor: lexicalEditor({}),
   db: postgresAdapter({
     pool: {

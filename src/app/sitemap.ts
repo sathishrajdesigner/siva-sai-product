@@ -1,12 +1,13 @@
 import type { MetadataRoute } from 'next'
 import { getPayload } from '@/lib/getPayload'
+import { getERPProducts } from '@/lib/erpProducts'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const payload = await getPayload()
   const appUrl = (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000').replace(/\/$/, '')
 
-  const [{ docs: products }, { docs: blogs }] = await Promise.all([
-    payload.find({ collection: 'products', where: { isActive: { equals: true } }, limit: 500, depth: 0 }),
+  const [catalog, { docs: blogs }] = await Promise.all([
+    getERPProducts(),
     payload.find({ collection: 'blog-posts', where: { status: { equals: 'published' } }, limit: 200, depth: 0 }),
   ])
 
@@ -18,9 +19,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${appUrl}/contact`,    lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
   ]
 
-  const productPages: MetadataRoute.Sitemap = (products as any[]).map((p) => ({
-    url: `${appUrl}/products/${p.slug}`,
-    lastModified: new Date(p.updatedAt),
+  const productPages: MetadataRoute.Sitemap = catalog.products.map((product, index) => ({
+    url: `${appUrl}/products/${product.slug}`,
+    lastModified: new Date(catalog.rows[index].updated_at),
     changeFrequency: 'weekly',
     priority: 0.8,
   }))

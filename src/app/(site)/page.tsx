@@ -8,7 +8,7 @@ import Reviews from '@/components/home/Reviews'
 import ContactCTA from '@/components/home/ContactCTA'
 import BlogPreview from '@/components/home/BlogPreview'
 import { getPayload } from '@/lib/getPayload'
-import { toProduct } from '@/lib/types'
+import { getERPProducts } from '@/lib/erpProducts'
 import type { CmsBannerSlide, CmsCategory } from '@/lib/types'
 import type { CmsBlogPost } from '@/components/home/BlogPreview'
 
@@ -23,16 +23,12 @@ export default async function HomePage() {
 
   const [
     { docs: bannerDocs },
-    { docs: trendingDocs },
-    { docs: featuredDocs },
-    { docs: categoryDocs },
     { docs: blogDocs },
+    catalog,
   ] = await Promise.all([
     payload.find({ collection: 'banners', where: { isActive: { equals: true } }, sort: 'sortOrder', limit: 10 }),
-    payload.find({ collection: 'products', where: { and: [{ isTrending: { equals: true } }, { isActive: { equals: true } }] }, depth: 1, limit: 10 }),
-    payload.find({ collection: 'products', where: { and: [{ isFeatured: { equals: true } }, { isActive: { equals: true } }] }, depth: 1, limit: 16 }),
-    payload.find({ collection: 'categories', where: { isActive: { equals: true } }, sort: 'sortOrder', limit: 50 }),
     payload.find({ collection: 'blog-posts', where: { status: { equals: 'published' } }, sort: '-publishedAt', depth: 1, limit: 3 }),
+    getERPProducts(),
   ])
 
   const slides: CmsBannerSlide[] = (bannerDocs as any[]).map((b, i) => ({
@@ -48,13 +44,7 @@ export default async function HomePage() {
 
   const categories: CmsCategory[] = [
     { id: 'all', name: 'All Products', slug: 'all' },
-    ...(categoryDocs as any[]).map((c) => ({
-      id: c.id,
-      name: c.name,
-      slug: c.slug,
-      icon: c.icon ?? null,
-      parentId: typeof c.parent === 'object' ? c.parent?.id : (c.parent ?? null),
-    })),
+    ...catalog.categories,
   ]
 
   const blogPosts: CmsBlogPost[] = (blogDocs as any[]).map((p) => ({
@@ -71,8 +61,8 @@ export default async function HomePage() {
     <SiteLayout>
       <HeroBanner slides={slides} />
       <StatsBar />
-      <TopProducts products={(trendingDocs as any[]).map(toProduct)} />
-      <FeaturedProducts products={(featuredDocs as any[]).map(toProduct)} categories={categories} />
+      <TopProducts products={catalog.products.slice(0, 10)} />
+      <FeaturedProducts products={catalog.products} categories={categories} />
       <Features />
       <BlogPreview posts={blogPosts} />
       <Reviews />
