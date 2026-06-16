@@ -38,6 +38,7 @@ export default function Header() {
               <Link
                 key={link.href}
                 href={link.href}
+                aria-current={pathname === link.href ? 'page' : undefined}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                   pathname === link.href
                     ? 'bg-orange-50 text-orange-600'
@@ -60,6 +61,8 @@ export default function Header() {
             className="md:hidden p-2 rounded-md text-stone-600 hover:text-orange-600 hover:bg-orange-50"
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label="Toggle menu"
+            aria-expanded={menuOpen}
+            aria-controls="mobile-navigation"
           >
             {menuOpen ? <FaXmark className="w-5 h-5" /> : <FaBars className="w-5 h-5" />}
           </button>
@@ -67,12 +70,13 @@ export default function Header() {
 
         {/* Mobile Nav */}
         {menuOpen && (
-          <nav className="md:hidden border-t border-stone-100 py-3 flex flex-col gap-1">
+          <nav className="md:hidden border-t border-stone-100 py-3 flex flex-col gap-1" id="mobile-navigation">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setMenuOpen(false)}
+                aria-current={pathname === link.href ? 'page' : undefined}
                 className={`px-4 py-2.5 rounded-md text-sm font-medium transition-colors ${
                   pathname === link.href
                     ? 'bg-orange-50 text-orange-600'

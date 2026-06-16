@@ -18,6 +18,26 @@ const OVERLAYS = [
   'from-red-900/80 via-red-800/60 to-transparent',
 ]
 
+type BannerDocument = {
+  id: number | string
+  tag?: string | null
+  title: string
+  subtitle?: string | null
+  ctaText?: string | null
+  ctaLink?: string | null
+  image?: { url?: string | null } | number | string | null
+}
+
+type BlogDocument = {
+  id: number | string
+  title: string
+  slug: string
+  excerpt?: string | null
+  coverImage?: { url?: string | null } | number | string | null
+  author?: string | null
+  publishedAt?: string | null
+}
+
 export default async function HomePage() {
   const payload = await getPayload()
 
@@ -31,7 +51,7 @@ export default async function HomePage() {
     getERPProducts(),
   ])
 
-  const slides: CmsBannerSlide[] = (bannerDocs as any[]).map((b, i) => ({
+  const slides: CmsBannerSlide[] = (bannerDocs as unknown as BannerDocument[]).map((b, i) => ({
     id: b.id,
     tag: b.tag ?? null,
     heading: b.title,
@@ -47,7 +67,7 @@ export default async function HomePage() {
     ...catalog.categories,
   ]
 
-  const blogPosts: CmsBlogPost[] = (blogDocs as any[]).map((p) => ({
+  const blogPosts: CmsBlogPost[] = (blogDocs as unknown as BlogDocument[]).map((p) => ({
     id: p.id,
     title: p.title,
     slug: p.slug,

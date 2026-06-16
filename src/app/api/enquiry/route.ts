@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getPayload } from '@/lib/getPayload'
 
 // ── Simple in-memory rate limiter ─────────────────────────────────────────────
 const rateMap = new Map<string, { count: number; resetAt: number }>()
@@ -77,11 +78,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ errors }, { status: 422 })
     }
 
-    // 6. Forward to Payload REST API
-    const payloadRes = await fetch(`${appUrl}/api/enquiries`, {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    // 6. Save through the server-only Local API after validation.
+    const payload = await getPayload()
+    await payload.create({
+      collection: 'enquiries',
+      overrideAccess: true,
+      data: {
         name:        cleanName,
         mobile:      cleanMobile,
         email:       cleanEmail   || undefined,
@@ -90,13 +92,8 @@ export async function POST(req: NextRequest) {
         source:      'website',
         ipAddress:   ip,
         referrerUrl: req.headers.get('referer') || undefined,
-      }),
+      },
     })
-
-    if (!payloadRes.ok) {
-      console.error('[enquiry] payload error:', await payloadRes.text())
-      return NextResponse.json({ error: 'Failed to save enquiry.' }, { status: 500 })
-    }
 
     return NextResponse.json({ success: true }, { status: 201 })
   } catch (err) {

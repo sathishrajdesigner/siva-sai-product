@@ -29,7 +29,7 @@ export default function Footer() {
               href={`https://wa.me/${whatsapp}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 transition-colors"
+              className="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-green-700 text-white text-sm font-medium rounded-md hover:bg-green-800 transition-colors"
             >
               <FaWhatsapp className="w-4 h-4" />
               WhatsApp Us
@@ -38,7 +38,7 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Quick Links</h3>
+            <h2 className="text-white font-semibold mb-4">Quick Links</h2>
             <ul className="space-y-2 text-sm">
               {[
                 { href: '/', label: 'Home' },
@@ -59,7 +59,7 @@ export default function Footer() {
 
           {/* Products */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Our Products</h3>
+            <h2 className="text-white font-semibold mb-4">Our Products</h2>
             <ul className="space-y-2 text-sm">
               {['Camphor', 'Neem Oil', 'Castor Oil', 'Deepam Oil', 'Vibhuti', 'Kumkum', 'Pooja Powder', 'Paneer Water'].map(
                 (item) => (
@@ -76,7 +76,7 @@ export default function Footer() {
 
           {/* Contact */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Contact Us</h3>
+            <h2 className="text-white font-semibold mb-4">Contact Us</h2>
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-2.5">
                 <FaLocationDot className="w-4 h-4 mt-0.5 text-orange-400 shrink-0" />
@@ -96,7 +96,7 @@ export default function Footer() {
       </div>
 
       <div className="border-t border-stone-800">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-stone-500">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-stone-400">
           <span>© {new Date().getFullYear()} Siva Sai Products. All rights reserved.</span>
           <span>Hosur, Tamil Nadu, India</span>
         </div>

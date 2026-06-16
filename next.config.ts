@@ -14,7 +14,7 @@ const securityHeaders = [
       "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
-      "img-src 'self' data: blob: https://images.unsplash.com https://plus.unsplash.com https://*.supabase.co https://*.cloudfront.net",
+      "img-src 'self' data: blob: https://images.unsplash.com https://plus.unsplash.com https://*.supabase.co https://*.cloudfront.net https://siva-sai-erp.vercel.app",
       "connect-src 'self' https://*.supabase.co https://*.amazonaws.com",
       "frame-src https://www.google.com",
       "media-src 'self'",
@@ -23,6 +23,10 @@ const securityHeaders = [
 ]
 
 const nextConfig: NextConfig = {
+  outputFileTracingRoot: process.cwd(),
+  experimental: {
+    globalNotFound: true,
+  },
   async headers() {
     return [
       {
@@ -39,6 +43,7 @@ const nextConfig: NextConfig = {
       { protocol: 'http',  hostname: 'localhost' },
       { protocol: 'https', hostname: '*.supabase.co' },
       { protocol: 'https', hostname: '*.cloudfront.net' },
+      { protocol: 'https', hostname: 'siva-sai-erp.vercel.app', pathname: '/api/product-image' },
     ],
   },
 }

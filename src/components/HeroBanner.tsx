@@ -120,16 +120,21 @@ export default function HeroBanner({ slides: propSlides }: Props) {
         </div>
       </div>
 
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
+      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1" role="group" aria-label="Hero slides">
         {slides.map((_, i) => (
           <button
             key={i}
             onClick={() => setCurrent(i)}
-            className={`h-2 rounded-full transition-all duration-300 ${
-              i === current ? 'w-6 bg-white' : 'w-2 bg-white/40 hover:bg-white/70'
-            }`}
+            className="flex h-12 w-12 items-center justify-center rounded-full"
             aria-label={`Slide ${i + 1}`}
-          />
+            aria-pressed={i === current}
+          >
+            <span
+              className={`h-2 rounded-full transition-all duration-300 ${
+                i === current ? 'w-6 bg-white' : 'w-2 bg-white/50'
+              }`}
+            />
+          </button>
         ))}
       </div>
 

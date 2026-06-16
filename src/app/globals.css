@@ -126,5 +126,40 @@
   }
   html {
     @apply font-sans;
+    scroll-padding-top: 5rem;
   }
+
+  :where(a, button, input, select, textarea):focus-visible {
+    outline: 3px solid #f97316;
+    outline-offset: 3px;
+  }
+}
+
+@media (pointer: coarse) {
+  button,
+  select,
+  input:not([type='hidden']),
+  textarea {
+    min-height: 48px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Tailwind orange-600 is too light for small white text under WCAG AA. */
+.bg-orange-600 {
+  background-color: #c2410c !important;
+}
+
+.text-orange-600 {
+  color: #c2410c !important;
 }

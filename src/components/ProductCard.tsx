@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import { FaPhone } from 'react-icons/fa6'
+import { FaBoxOpen, FaPhone } from 'react-icons/fa6'
 import EnquiryModal from './EnquiryModal'
 import type { CmsProduct } from '@/lib/types'
 
@@ -27,7 +27,7 @@ export default function ProductCard({ product }: Props) {
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-orange-50">
-              <span className="text-5xl">🪔</span>
+              <FaBoxOpen aria-hidden="true" className="h-12 w-12 text-orange-300" />
             </div>
           )}
           {product.categoryName && (
@@ -40,7 +40,7 @@ export default function ProductCard({ product }: Props) {
         </div>
 
         <div className="p-4 flex flex-col flex-1">
-          <h3 className="font-semibold text-stone-800 text-base leading-snug">{product.name}</h3>
+          <h2 className="font-semibold text-stone-800 text-base leading-snug">{product.name}</h2>
           {product.shortDescription && (
             <p className="text-xs text-stone-500 mt-1.5 leading-relaxed flex-1 line-clamp-2">
               {product.shortDescription}

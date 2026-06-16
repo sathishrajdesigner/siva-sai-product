@@ -8,6 +8,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from '@/lib/getPayload'
 
 export async function POST(req: NextRequest) {
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  }
+
   const auth = req.headers.get('authorization') ?? ''
   if (auth !== `Bearer ${process.env.PAYLOAD_SECRET}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

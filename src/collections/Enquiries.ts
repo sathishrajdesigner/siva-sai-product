@@ -1,5 +1,14 @@
 import type { CollectionConfig } from 'payload'
 
+function escapeHTML(value: unknown): string {
+  return String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;')
+}
+
 export const Enquiries: CollectionConfig = {
   slug: 'enquiries',
 
@@ -12,13 +21,56 @@ export const Enquiries: CollectionConfig = {
 
   // Enquiries are created via frontend API only — not from admin
   access: {
-    create: () => true,                        // frontend form posts here
+    create: () => false,
     read:   ({ req }) => Boolean(req.user),    // admin only
     update: ({ req }) => Boolean(req.user),    // admin only
     delete: ({ req }) => {
       if (!req.user) return false
       return (req.user as { role?: string }).role === 'super_admin'
     },
+  },
+  hooks: {
+    afterChange: [
+      async ({ doc, operation, req }) => {
+        const adminEmail = process.env.ADMIN_EMAIL
+        if (operation !== 'create' || !process.env.RESEND_API_KEY || !adminEmail) {
+          return doc
+        }
+
+        const subject = `New website enquiry from ${doc.name}`
+        const text = [
+          `Name: ${doc.name}`,
+          `Mobile: ${doc.mobile}`,
+          `Email: ${doc.email || 'Not provided'}`,
+          `Product: ${doc.product || 'General Enquiry'}`,
+          `Message: ${doc.message || 'Not provided'}`,
+        ].join('\n')
+
+        try {
+          await req.payload.sendEmail({
+            to: adminEmail,
+            replyTo: doc.email || undefined,
+            subject,
+            text,
+            html: `
+              <h2>New website enquiry</h2>
+              <p><strong>Name:</strong> ${escapeHTML(doc.name)}</p>
+              <p><strong>Mobile:</strong> ${escapeHTML(doc.mobile)}</p>
+              <p><strong>Email:</strong> ${escapeHTML(doc.email || 'Not provided')}</p>
+              <p><strong>Product:</strong> ${escapeHTML(doc.product || 'General Enquiry')}</p>
+              <p><strong>Message:</strong><br>${escapeHTML(doc.message || 'Not provided').replaceAll('\n', '<br>')}</p>
+            `,
+          })
+        } catch (error) {
+          req.payload.logger.error({
+            err: error,
+            msg: `Failed to send enquiry notification for enquiry ${doc.id}`,
+          })
+        }
+
+        return doc
+      },
+    ],
   },
 
   fields: [

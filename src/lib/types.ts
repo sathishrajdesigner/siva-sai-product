@@ -27,13 +27,24 @@ export type CmsBannerSlide = {
   overlay: string
 }
 
-export function toProduct(p: any): CmsProduct {
+type CmsProductDocument = {
+  id: number | string
+  name: string
+  slug: string
+  shortDescription?: string | null
+  images?: Array<{ image?: { url?: string | null } | number | string | null }> | null
+  category?: { name?: string | null; slug?: string | null } | number | string | null
+}
+
+export function toProduct(p: CmsProductDocument): CmsProduct {
+  const image = p.images?.[0]?.image
+
   return {
     id: p.id,
     name: p.name,
     slug: p.slug,
     shortDescription: p.shortDescription ?? null,
-    imageUrl: p.images?.[0]?.image?.url ?? null,
+    imageUrl: typeof image === 'object' && image ? image.url ?? null : null,
     categoryName: typeof p.category === 'object' ? p.category?.name : null,
     categorySlug: typeof p.category === 'object' ? p.category?.slug : null,
   }

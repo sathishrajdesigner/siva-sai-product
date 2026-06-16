@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Poppins, Playfair_Display } from 'next/font/google'
 import '../globals.css'
 
@@ -19,10 +19,40 @@ const playfair = Playfair_Display({
 })
 
 export const metadata: Metadata = {
-  title: 'Siva Sai Products — Wholesale Pooja Products, Hosur',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://siva-sai-products.vercel.app'),
+  title: {
+    default: 'Siva Sai Products - Wholesale Pooja Products, Hosur',
+    template: '%s | Siva Sai Products',
+  },
   description:
     'Siva Sai Products is a trusted manufacturer and wholesale supplier of camphor, pooja oils, vibhuti, kumkum and devotional products from Hosur, Tamil Nadu.',
-  keywords: 'camphor manufacturer, pooja products wholesale, neem oil, deepam oil, vibhuti, kumkum, Hosur, Tamil Nadu',
+  keywords:
+    'camphor manufacturer, pooja products wholesale, neem oil, deepam oil, vibhuti, kumkum, Hosur, Tamil Nadu',
+  openGraph: {
+    type: 'website',
+    locale: 'en_IN',
+    siteName: 'Siva Sai Products',
+    title: 'Siva Sai Products - Wholesale Pooja Products, Hosur',
+    description:
+      'Manufacturer and wholesale supplier of camphor, pooja oils, vibhuti, kumkum and devotional products from Hosur, Tamil Nadu.',
+    url: '/',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Siva Sai Products',
+    description: 'Wholesale pooja products manufacturer and supplier in Hosur, Tamil Nadu.',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+  themeColor: '#ea580c',
 }
 
 export default function SiteRootLayout({ children }: { children: React.ReactNode }) {

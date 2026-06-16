@@ -63,7 +63,7 @@ export default function Reviews() {
                     {r.name}
                     <FaCircleCheck className="w-3.5 h-3.5 text-green-500 shrink-0" />
                   </div>
-                  <div className="text-xs text-stone-400 mt-0.5">{r.location}</div>
+                  <div className="text-xs text-stone-600 mt-0.5">{r.location}</div>
                 </div>
               </div>
             </div>

@@ -7,11 +7,40 @@ import { FaCalendar, FaUser, FaArrowLeft, FaTag } from 'react-icons/fa6'
 
 type Props = { params: Promise<{ slug: string }> }
 
+type BlogPostDocument = {
+  title: string
+  excerpt?: string | null
+  author?: string | null
+  publishedAt?: string | null
+  coverImage?: { url?: string | null } | number | string | null
+  content?: LexicalContent | null
+  meta?: {
+    title?: string | null
+    description?: string | null
+  } | null
+}
+
+type LexicalNode = {
+  type?: string
+  text?: string
+  format?: number
+  tag?: string
+  listType?: string
+  url?: string
+  children?: LexicalNode[]
+}
+
+type LexicalContent = {
+  root?: {
+    children?: LexicalNode[]
+  }
+}
+
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params
   const payload = await getPayload()
   const { docs } = await payload.find({ collection: 'blog-posts', where: { slug: { equals: slug } }, limit: 1 })
-  const post = docs[0] as any
+  const post = docs[0] as unknown as BlogPostDocument | undefined
   if (!post) return {}
   return {
     title: post.meta?.title || `${post.title} — Siva Sai Products`,
@@ -30,7 +59,7 @@ export default async function BlogPostPage({ params }: Props) {
     limit: 1,
   })
 
-  const post = docs[0] as any
+  const post = docs[0] as unknown as BlogPostDocument | undefined
   if (!post) notFound()
 
   const coverUrl = typeof post.coverImage === 'object' ? post.coverImage?.url ?? null : null
@@ -117,18 +146,18 @@ export default async function BlogPostPage({ params }: Props) {
 }
 
 // Simple Lexical content renderer — extracts text from nodes
-function BlogContent({ content }: { content: any }) {
+function BlogContent({ content }: { content: LexicalContent }) {
   if (!content?.root?.children) return null
 
-  function renderNode(node: any, key: number): React.ReactNode {
+  function renderNode(node: LexicalNode, key: number): React.ReactNode {
     if (node.type === 'text') {
       let text: React.ReactNode = node.text
-      if (node.format & 1) text = <strong key={key}>{text}</strong>
-      if (node.format & 2) text = <em key={key}>{text}</em>
-      if (node.format & 8) text = <u key={key}>{text}</u>
+      if ((node.format ?? 0) & 1) text = <strong key={key}>{text}</strong>
+      if ((node.format ?? 0) & 2) text = <em key={key}>{text}</em>
+      if ((node.format ?? 0) & 8) text = <u key={key}>{text}</u>
       return text
     }
-    const children = node.children?.map((child: any, i: number) => renderNode(child, i))
+    const children = node.children?.map((child, i) => renderNode(child, i))
     switch (node.type) {
       case 'paragraph': return <p key={key}>{children}</p>
       case 'heading':   return node.tag === 'h2' ? <h2 key={key}>{children}</h2> : node.tag === 'h3' ? <h3 key={key}>{children}</h3> : <h4 key={key}>{children}</h4>
@@ -140,5 +169,5 @@ function BlogContent({ content }: { content: any }) {
     }
   }
 
-  return <>{content.root.children.map((node: any, i: number) => renderNode(node, i))}</>
+  return <>{content.root.children.map((node, i) => renderNode(node, i))}</>
 }

@@ -1,7 +1,9 @@
 import { buildConfig } from 'payload' 
 import { postgresAdapter } from '@payloadcms/db-postgres'
+import { resendAdapter } from '@payloadcms/email-resend'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { s3Storage } from '@payloadcms/storage-s3'
+import sharp from 'sharp'
 import { Categories } from './src/collections/Categories'
 import { Products } from './src/collections/Products'
 import { ProductVariants } from './src/collections/ProductVariants'
@@ -24,9 +26,19 @@ const corsOrigins = [
 ].filter((v): v is string => !!v)
   .filter((v, i, a) => a.indexOf(v) === i)
 
+const isS3Enabled = process.env.AWS_S3_ENABLED === 'true'
+
 export default buildConfig({
   serverURL: appURL,
   cors: corsOrigins,
+  sharp,
+  email: process.env.RESEND_API_KEY
+    ? resendAdapter({
+        apiKey: process.env.RESEND_API_KEY,
+        defaultFromAddress: process.env.RESEND_FROM_EMAIL ?? 'onboarding@resend.dev',
+        defaultFromName: process.env.RESEND_FROM_NAME ?? 'Siva Sai Products',
+      })
+    : undefined,
   admin: {
     user: Users.slug,
     theme: 'light',
@@ -57,14 +69,16 @@ export default buildConfig({
   globals: [SiteSettings],
   plugins: [
     s3Storage({
-      enabled: Boolean(process.env.AWS_S3_BUCKET),
+      enabled: isS3Enabled && Boolean(process.env.AWS_S3_BUCKET),
+      alwaysInsertFields: true,
       collections: {
         media: {
           prefix: 'website/media',
           generateFileURL: ({ filename, prefix }) => {
             const base = process.env.NEXT_PUBLIC_CLOUDFRONT_URL?.replace(/\/$/, '')
             const key = [prefix, filename].filter(Boolean).join('/')
-            return base ? `${base}/${key}` : key
+            if (base) return `${base}/${key}`
+            return `${appURL}/api/media-file?key=${encodeURIComponent(key)}`
           },
         },
       },
@@ -82,6 +96,7 @@ export default buildConfig({
   ],
   editor: lexicalEditor({}),
   db: postgresAdapter({
+    push: false,
     pool: {
       connectionString: process.env.DATABASE_URI ?? '',
       ssl: { rejectUnauthorized: false },
