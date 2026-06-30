@@ -11,7 +11,7 @@ export default function NotFound() {
         <h1 className="font-heading text-6xl font-bold text-orange-600 mb-2">404</h1>
         <h2 className="font-heading text-2xl font-bold text-stone-800 mb-3">Page Not Found</h2>
         <p className="text-stone-500 text-base max-w-md mx-auto">
-          The page you're looking for doesn't exist or has been moved. Let us help you find what you need.
+          The page you&apos;re looking for doesn&apos;t exist or has been moved. Let us help you find what you need.
         </p>
       </div>
 

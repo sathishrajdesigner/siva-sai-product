@@ -6,7 +6,8 @@
     "dev": "next dev --webpack",
     "build": "next build --webpack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "echo \"No automated website tests configured yet\""
   },
   "dependencies": {
     "@base-ui/react": "^1.3.0",

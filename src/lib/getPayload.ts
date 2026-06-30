@@ -7,7 +7,8 @@ const stubPayload = {
   find: async () => emptyResult,
   findByID: async () => null,
   findGlobal: async () => ({}),
-} as any
+  create: async () => ({ id: 0 }),
+}
 
 export async function getPayload() {
   if (!process.env.PAYLOAD_SECRET) return stubPayload

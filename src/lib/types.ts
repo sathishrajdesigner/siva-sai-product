@@ -27,7 +27,16 @@ export type CmsBannerSlide = {
   overlay: string
 }
 
-export function toProduct(p: any): CmsProduct {
+type ProductDocument = {
+  id: number | string
+  name: string
+  slug: string
+  shortDescription?: string | null
+  images?: Array<{ image?: { url?: string | null } | null }> | null
+  category?: { name?: string | null; slug?: string | null } | number | string | null
+}
+
+export function toProduct(p: ProductDocument): CmsProduct {
   return {
     id: p.id,
     name: p.name,

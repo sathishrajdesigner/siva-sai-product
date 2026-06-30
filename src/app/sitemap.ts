@@ -2,6 +2,11 @@ import type { MetadataRoute } from 'next'
 import { getPayload } from '@/lib/getPayload'
 import { getERPProducts } from '@/lib/erpProducts'
 
+type BlogSitemapDoc = {
+  slug: string
+  updatedAt: string
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const payload = await getPayload()
   const appUrl = (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000').replace(/\/$/, '')
@@ -26,7 +31,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }))
 
-  const blogPages: MetadataRoute.Sitemap = (blogs as any[]).map((p) => ({
+  const blogPages: MetadataRoute.Sitemap = (blogs as BlogSitemapDoc[]).map((p) => ({
     url: `${appUrl}/blog/${p.slug}`,
     lastModified: new Date(p.updatedAt),
     changeFrequency: 'monthly',

@@ -6,12 +6,48 @@ import { getPayload } from '@/lib/getPayload'
 import { FaCalendar, FaUser, FaArrowLeft, FaTag } from 'react-icons/fa6'
 
 type Props = { params: Promise<{ slug: string }> }
+type LexicalTextNode = {
+  type: 'text'
+  text: string
+  format?: number
+}
+type LexicalElementNode = {
+  type: string
+  tag?: string
+  listType?: string
+  url?: string
+  children?: LexicalNode[]
+}
+type LexicalNode = LexicalTextNode | LexicalElementNode
+type LexicalContent = {
+  root?: {
+    children?: LexicalNode[]
+  }
+}
+type BlogPostDoc = {
+  id: number | string
+  title: string
+  slug: string
+  meta?: {
+    title?: string | null
+    description?: string | null
+  } | null
+  excerpt?: string | null
+  coverImage?: { url?: string | null } | number | string | null
+  publishedAt?: string | null
+  author?: string | null
+  content?: LexicalContent | null
+}
+
+function isLexicalTextNode(node: LexicalNode): node is LexicalTextNode {
+  return node.type === 'text'
+}
 
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params
   const payload = await getPayload()
   const { docs } = await payload.find({ collection: 'blog-posts', where: { slug: { equals: slug } }, limit: 1 })
-  const post = docs[0] as any
+  const post = docs[0] as BlogPostDoc | undefined
   if (!post) return {}
   return {
     title: post.meta?.title || `${post.title} — Siva Sai Products`,
@@ -30,7 +66,7 @@ export default async function BlogPostPage({ params }: Props) {
     limit: 1,
   })
 
-  const post = docs[0] as any
+  const post = docs[0] as BlogPostDoc | undefined
   if (!post) notFound()
 
   const coverUrl = typeof post.coverImage === 'object' ? post.coverImage?.url ?? null : null
@@ -117,18 +153,19 @@ export default async function BlogPostPage({ params }: Props) {
 }
 
 // Simple Lexical content renderer — extracts text from nodes
-function BlogContent({ content }: { content: any }) {
+function BlogContent({ content }: { content: LexicalContent }) {
   if (!content?.root?.children) return null
 
-  function renderNode(node: any, key: number): React.ReactNode {
-    if (node.type === 'text') {
+  function renderNode(node: LexicalNode, key: number): React.ReactNode {
+    if (isLexicalTextNode(node)) {
       let text: React.ReactNode = node.text
-      if (node.format & 1) text = <strong key={key}>{text}</strong>
-      if (node.format & 2) text = <em key={key}>{text}</em>
-      if (node.format & 8) text = <u key={key}>{text}</u>
+      const format = node.format ?? 0
+      if (format & 1) text = <strong key={key}>{text}</strong>
+      if (format & 2) text = <em key={key}>{text}</em>
+      if (format & 8) text = <u key={key}>{text}</u>
       return text
     }
-    const children = node.children?.map((child: any, i: number) => renderNode(child, i))
+    const children = node.children?.map((child, i) => renderNode(child, i))
     switch (node.type) {
       case 'paragraph': return <p key={key}>{children}</p>
       case 'heading':   return node.tag === 'h2' ? <h2 key={key}>{children}</h2> : node.tag === 'h3' ? <h3 key={key}>{children}</h3> : <h4 key={key}>{children}</h4>
@@ -140,5 +177,5 @@ function BlogContent({ content }: { content: any }) {
     }
   }
 
-  return <>{content.root.children.map((node: any, i: number) => renderNode(node, i))}</>
+  return <>{content.root.children.map((node, i) => renderNode(node, i))}</>
 }

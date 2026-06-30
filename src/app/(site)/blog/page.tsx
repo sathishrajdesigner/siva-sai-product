@@ -4,6 +4,16 @@ import SiteLayout from '@/components/layout/SiteLayout'
 import { getPayload } from '@/lib/getPayload'
 import { FaArrowRight, FaCalendar, FaUser, FaNewspaper } from 'react-icons/fa6'
 
+type BlogListDoc = {
+  id: number | string
+  title: string
+  slug: string
+  excerpt?: string | null
+  coverImage?: { url?: string | null } | number | string | null
+  author?: string | null
+  publishedAt?: string | null
+}
+
 export const metadata = {
   title: 'Blog — Siva Sai Products',
   description: 'Articles on pooja products, camphor, devotional oils and more from Siva Sai Products.',
@@ -45,7 +55,7 @@ export default async function BlogPage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {(posts as any[]).map((post) => {
+              {(posts as BlogListDoc[]).map((post) => {
                 const coverUrl = typeof post.coverImage === 'object' ? post.coverImage?.url ?? null : null
                 const publishedAt = post.publishedAt
                   ? new Date(post.publishedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })

@@ -12,6 +12,26 @@ import { getERPProducts } from '@/lib/erpProducts'
 import type { CmsBannerSlide, CmsCategory } from '@/lib/types'
 import type { CmsBlogPost } from '@/components/home/BlogPreview'
 
+type MediaRef = { url?: string | null } | number | string | null
+type BannerDoc = {
+  id: number | string
+  tag?: string | null
+  title: string
+  subtitle?: string | null
+  ctaText?: string | null
+  ctaLink?: string | null
+  image?: MediaRef
+}
+type BlogDoc = {
+  id: number | string
+  title: string
+  slug: string
+  excerpt?: string | null
+  coverImage?: MediaRef
+  author?: string | null
+  publishedAt?: string | null
+}
+
 const OVERLAYS = [
   'from-orange-900/80 via-orange-800/60 to-transparent',
   'from-amber-900/80 via-amber-800/60 to-transparent',
@@ -31,7 +51,7 @@ export default async function HomePage() {
     getERPProducts(),
   ])
 
-  const slides: CmsBannerSlide[] = (bannerDocs as any[]).map((b, i) => ({
+  const slides: CmsBannerSlide[] = (bannerDocs as BannerDoc[]).map((b, i) => ({
     id: b.id,
     tag: b.tag ?? null,
     heading: b.title,
@@ -47,7 +67,7 @@ export default async function HomePage() {
     ...catalog.categories,
   ]
 
-  const blogPosts: CmsBlogPost[] = (blogDocs as any[]).map((p) => ({
+  const blogPosts: CmsBlogPost[] = (blogDocs as BlogDoc[]).map((p) => ({
     id: p.id,
     title: p.title,
     slug: p.slug,
