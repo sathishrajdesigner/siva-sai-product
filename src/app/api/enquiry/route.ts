@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
 
     // 3. Parse body
     const body = await req.json()
-    const { name, mobile, email, product, message, _hp } = body
+    const { name, mobile, email, product, message, _hp, items, type } = body
 
     // 4. Honeypot
     if (_hp && String(_hp).length > 0) {
@@ -65,6 +65,7 @@ export async function POST(req: NextRequest) {
     const cleanEmail   = sanitize(String(email   || ''))
     const cleanMessage = sanitize(String(message || ''))
     const cleanProduct = sanitize(String(product || 'General Enquiry'))
+    const isQuotation  = type === 'quotation'
 
     if (!cleanName || cleanName.length < 2)       errors.name    = 'Name must be at least 2 characters.'
     if (cleanName.length > 100)                   errors.name    = 'Name is too long.'
@@ -73,20 +74,34 @@ export async function POST(req: NextRequest) {
     if (cleanEmail && !isValidEmail(cleanEmail))  errors.email   = 'Enter a valid email address.'
     if (cleanMessage.length > 1000)               errors.message = 'Message is too long (max 1000 characters).'
 
+    if (isQuotation && (!Array.isArray(items) || items.length === 0)) {
+      errors.items = 'Please add at least one product to your quote.'
+    }
+
     if (Object.keys(errors).length > 0) {
       return NextResponse.json({ errors }, { status: 422 })
     }
+
+    // Sanitize quotation items
+    const cleanItems = isQuotation
+      ? (items as Array<{ productName: string; qty: number }>).map((i) => ({
+          productName: sanitize(String(i.productName || '')).slice(0, 200),
+          qty: Math.max(1, Math.min(9999, Number(i.qty) || 1)),
+        }))
+      : undefined
 
     // 6. Forward to Payload REST API
     const payloadRes = await fetch(`${appUrl}/api/enquiries`, {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
+        type:        isQuotation ? 'quotation' : 'single_enquiry',
         name:        cleanName,
         mobile:      cleanMobile,
         email:       cleanEmail   || undefined,
-        product:     cleanProduct,
+        product:     isQuotation ? `Quotation — ${cleanItems?.length} product(s)` : cleanProduct,
         message:     cleanMessage || undefined,
+        items:       cleanItems,
         source:      'website',
         ipAddress:   ip,
         referrerUrl: req.headers.get('referer') || undefined,

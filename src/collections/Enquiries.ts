@@ -6,7 +6,7 @@ export const Enquiries: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
     group: 'Enquiries',
-    defaultColumns: ['name', 'mobile', 'product', 'status', 'createdAt'],
+    defaultColumns: ['name', 'mobile', 'type', 'product', 'status', 'createdAt'],
     listSearchableFields: ['name', 'mobile', 'email'],
   },
 
@@ -23,6 +23,30 @@ export const Enquiries: CollectionConfig = {
 
   fields: [
     // ── READ-ONLY — captured from frontend ────────────────────────────
+    {
+      name: 'type',
+      type: 'select',
+      defaultValue: 'single_enquiry',
+      options: [
+        { label: 'Single Enquiry', value: 'single_enquiry' },
+        { label: 'Quotation',      value: 'quotation' },
+      ],
+      admin: { readOnly: true },
+    },
+    {
+      name: 'items',
+      type: 'array',
+      label: 'Quoted Items',
+      admin: {
+        readOnly: true,
+        description: 'Products requested in this quotation.',
+        condition: (data) => data.type === 'quotation',
+      },
+      fields: [
+        { name: 'productName', type: 'text', label: 'Product' },
+        { name: 'qty',         type: 'number', label: 'Quantity' },
+      ],
+    },
     {
       name: 'name',
       type: 'text',
